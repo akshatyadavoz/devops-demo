@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -20,7 +17,9 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
+            sudo apt update
+            sudo apt install nginx -y
             sudo mkdir -p /var/www/html
-            sudo mv /tmp/index.html /var/www/html/index.html
-            sudo systemctl restart nginx
-            EOF
+            echo "<h1>Hello from Akshat DevOps CI/CD 🚀</h1><p>Deployed automatically from GitHub Actions</p>" | sudo tee /var/www/html/index.html > /dev/null
+            sudo systemctl enable nginx
+            sudo systemctl restart nginx || sudo systemctl start nginx
