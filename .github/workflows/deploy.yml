@@ -6,15 +6,21 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show repo files
-        run: ls -ltr
-
-      - name: Print success message
-        run: echo "Pipeline is running successfully"
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo bash -c 'cat > /var/www/html/index.html' << 'EOF'
+            <h1>Hello from Akshat DevOps CI/CD 🚀</h1>
+            <p>Deployed automatically from GitHub Actions</p>
+            EOF
